@@ -1,11 +1,25 @@
-import { CompareStrategy, DEFAULT_BRANCH_FACTOR, DwayHeap } from "./DwayHeapDef";
+import { DEFAULT_BRANCH_FACTOR } from "./DwayHeapDef";
 
-export abstract class PriorityHeap<T> implements DwayHeap<T> {
+export abstract class DwayHeapBase<T> {
     constructor(
         private readonly _branchFactor = DEFAULT_BRANCH_FACTOR,
         private elements: T[] = [],
-        private compare: CompareStrategy<T>,
     ) { }
+
+    /**
+     * Compare the two elements
+     * @param x 
+     * @param y 
+     * @returns 1 if x > y, -1 if x < y, 0 if x = y
+     */
+    protected abstract compare(x: T, y: T): number;
+    /**
+     * Compare the two object whether they are the same or not
+     * @param x 
+     * @param y 
+     * @returns true: equal, false: not equal
+     */
+    protected abstract equal(x: T, y: T): boolean;
 
     public get size(): number {
         return this.elements.length;
@@ -22,6 +36,9 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
     public peek(): T | undefined {
         return this.elements[0];
     }
+    /**
+     * Remove the first element and return it if the heap is not empty.
+     */
     public pop(): T | undefined {
         if (this.size < 2) {
             return this.elements.shift();
@@ -103,8 +120,6 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
             }
         }
     }
-
-    protected abstract equal(x: T, y: T): boolean;
 
     private bubbleUp(index = this.size - 1): void {
         while (index > 0) {
