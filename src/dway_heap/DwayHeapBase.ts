@@ -39,6 +39,7 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
         if (element === undefined || element === null || typeof element === "function") {
             throw new TypeError("Invalid argument. 'undefined', 'null', and 'function' can not be assigned.");
         }
+
         this.elements.push(element);
         this.bubbleUp();
     }
@@ -69,6 +70,32 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
             this.bubbleUp(index);
         } else if (compareResult === 1) {
             this.pushDown(index);
+        }
+    }
+
+    public updateAll(oldValue: T, newValue: T): void {
+        const indexes = this.elements.map((x, index) => {
+            return { value: x, index };
+        }).filter((x) => this.equal(x.value, oldValue))
+            .map((x) => x.index);
+
+        if (indexes.length === 0) {
+            throw Error(`oldValue not found: ${oldValue}`);
+        }
+
+        const compareResult = this.compare(oldValue, newValue);
+        if (compareResult === -1) {
+            // bubbleUp must start with the smaller index (near to top node)
+            for (const index of indexes) {
+                this.elements[index] = newValue;
+                this.bubbleUp(index);
+            }
+        } else if (compareResult === 1) {
+            // pushDown must start with the bigger index (near to leaf)
+            for (const index of indexes.sort((x, y) => y - x)) {
+                this.elements[index] = newValue;
+                this.pushDown(index);
+            }
         }
     }
 

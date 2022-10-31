@@ -131,4 +131,41 @@ describe("DwayHeapNumber", () => {
             expect(instance.pop()).to.equal(2);
         });
     });
+
+    describe("updateAll", () => {
+        beforeEach(() => {
+            instance.push(7);
+            instance.push(4);
+            instance.push(6);
+            instance.push(4);
+            instance.push(3);
+            instance.push(1);
+            instance.push(5);
+            instance.push(2);
+        });
+
+        it("should restate correctly when updating 4 to 10", () => {
+            instance.updateAll(4, 10);
+            expect(instance.pop()).to.equal(10);
+            expect(instance.pop()).to.equal(10);
+            expect(instance.pop()).to.equal(7);
+            expect(instance.pop()).to.equal(6);
+            expect(instance.pop()).to.equal(5);
+            expect(instance.pop()).to.equal(3);
+            expect(instance.pop()).to.equal(2);
+            expect(instance.pop()).to.equal(1);
+        });
+
+        it("should restate correctly when updating 4 to 1", () => {
+            instance.updateAll(4, 1);
+            expect(instance.pop()).to.equal(7);
+            expect(instance.pop()).to.equal(6);
+            expect(instance.pop()).to.equal(5);
+            expect(instance.pop()).to.equal(3);
+            expect(instance.pop()).to.equal(2);
+            expect(instance.pop()).to.equal(1);
+            expect(instance.pop()).to.equal(1);
+            expect(instance.pop()).to.equal(1);
+        });
+    });
 });
