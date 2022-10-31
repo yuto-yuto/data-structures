@@ -55,7 +55,12 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
         }
 
         this.elements[index] = this.elements.pop()!;
-        this.pushDown(index);
+        const compareResult = this.compare(element, this.elements[index])
+        if (compareResult === -1) {
+            this.bubbleUp(index);
+        } else if (compareResult === 1) {
+            this.pushDown(index);
+        }
     }
 
     public update(oldValue: T, newValue: T): void {
@@ -92,7 +97,7 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
             }
         } else if (compareResult === 1) {
             // pushDown must start with the bigger index (near to leaf)
-            for (const index of indexes.sort((x, y) => y - x)) {
+            for (const index of indexes.sort((a, b) => b - a)) {
                 this.elements[index] = newValue;
                 this.pushDown(index);
             }
@@ -125,7 +130,7 @@ export abstract class PriorityHeap<T> implements DwayHeap<T> {
             let childIndex = smallestChildIndex;
 
             for (let i = smallestChildIndex; i < largestChildIndex; i++) {
-                const compareResult = this.compare(this.elements[i], this.elements[i + 1]);
+                const compareResult = this.compare(highestPriorityElement, this.elements[i + 1]);
                 if (compareResult < 0) {
                     highestPriorityElement = this.elements[i + 1];
                     childIndex = i + 1;

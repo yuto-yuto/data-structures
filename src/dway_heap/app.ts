@@ -17,46 +17,52 @@ import { DwayHeapNumber } from "./DwayHeapNumber";
 
 {
     console.log("=== random value === ")
-    const numberHeap = new DwayHeapNumber();
-    const values = Array.from(Array(100)).map(() => Math.floor(Math.random() * 100));
-    for (const value of values) {
-        numberHeap.push(value);
-    }
+    for (let ii = 0; ii < 10; ii++) {
+        const numberHeap = new DwayHeapNumber(4);
+        const values = Array.from(Array(100)).map(() => Math.floor(Math.random() * 100));
+        for (const value of values) {
+            numberHeap.push(value);
+        }
 
-    for (let i = 0; i < 10; i++) {
-        const index = Math.floor(Math.random() * 100);
-        const oldValue = values[index];
-        const newValue = Math.floor(Math.random() * 100);
-        values[index] = newValue;
-        numberHeap.update(oldValue, newValue);
-    }
+        for (let i = 0; i < 10; i++) {
+            const index = Math.floor(Math.random() * 100);
+            const oldValue = values[index];
+            const newValue = Math.floor(Math.random() * 100);
+            values[index] = newValue;
+            numberHeap.update(oldValue, newValue);
+        }
 
-    for (let i = 0; i < 10; i++) {
-        const index = Math.floor(Math.random() * 100);
-        const oldValue = values[index];
-        const newValue = Math.floor(Math.random() * 100);
-        numberHeap.updateAll(oldValue, newValue);
+        for (let i = 0; i < 10; i++) {
+            const index = Math.floor(Math.random() * 100);
+            const oldValue = values[index];
+            const newValue = Math.floor(Math.random() * 100);
+            numberHeap.updateAll(oldValue, newValue);
 
-        for (let j = 0; j < 100; j++) {
-            if (values[j] === oldValue) {
-                values[j] = newValue;
+            for (let j = 0; j < 100; j++) {
+                if (values[j] === oldValue) {
+                    values[j] = newValue;
+                }
             }
         }
-    }
 
-    numberHeap.remove(values[12]);
-    numberHeap.remove(values[27]);
-    numberHeap.remove(values[48]);
-    numberHeap.remove(values[87]);
-    numberHeap.remove(values[98]);
-    
-    let results: number[] = [];
-    for (let i = numberHeap.size; i > 0; i--) {
-        results.push(numberHeap.pop()!);
+        numberHeap.remove(values[12]);
+        numberHeap.remove(values[27]);
+        numberHeap.remove(values[48]);
+        numberHeap.remove(values[87]);
+        numberHeap.remove(values[98]);
+
+        let results: number[] = [];
+        for (let i = numberHeap.size; i > 0; i--) {
+            results.push(numberHeap.pop()!);
+        }
+        const isSorted = isDescSorted(results);
+        if (!isSorted) {
+            console.log(`Length: ${results.length}`);
+            console.log(`Is desc sorted: ${isDescSorted(results)}`);
+            console.log(results)
+            break;
+        }
     }
-    console.log(`Length: ${results.length}`);
-    console.log(`Is desc sorted: ${isDescSorted(results)}`);
-    console.log(results)
 }
 
 function isDescSorted(nums: number[]) {

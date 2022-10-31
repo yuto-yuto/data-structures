@@ -52,6 +52,24 @@ describe("DwayHeapNumber", () => {
                 expect(instance.pop()).to.equal(4);
                 expect(instance.pop()).to.equal(2);
             });
+
+            it("should when branchFactor is 3", () => {
+                instance = new DwayHeapNumber(3);
+                instance.push(2);
+                instance.push(9);
+                instance.push(4);
+                instance.push(6);
+                instance.push(8);
+                instance.showTree();
+                expect(instance.pop()).to.equal(9);
+                instance.showTree();
+                expect(instance.pop()).to.equal(8);
+                instance.showTree();
+                expect(instance.pop()).to.equal(6);
+                instance.showTree();
+                expect(instance.pop()).to.equal(4);
+                expect(instance.pop()).to.equal(2);
+            });
         });
     });
 
@@ -82,6 +100,47 @@ describe("DwayHeapNumber", () => {
             expect(instance.pop()).to.equal(6);
             expect(instance.pop()).to.equal(4);
             expect(instance.pop()).to.equal(2);
+        });
+
+        it("should restate when branchFactor is 3 (pushDown)", () => {
+            instance.push(2);
+            instance.push(9);
+            instance.push(4);
+            instance.push(6);
+            instance.push(8);
+            instance.push(7);
+            instance.push(1);
+            instance.push(3);
+
+            instance.remove(8);
+            expect(instance.pop()).to.equal(9);
+            expect(instance.pop()).to.equal(7);
+            expect(instance.pop()).to.equal(6);
+            expect(instance.pop()).to.equal(4);
+            expect(instance.pop()).to.equal(3);
+            expect(instance.pop()).to.equal(2);
+            expect(instance.pop()).to.equal(1);
+        });
+        it("should restate when branchFactor is 3 (bubbleUp)", () => {
+            instance.push(90);
+            instance.push(50);
+            instance.push(70);
+            instance.push(60);
+            instance.push(30);
+            instance.push(40);
+            instance.push(10);
+            instance.push(5);
+            instance.push(65);
+
+            instance.remove(30);
+            expect(instance.pop()).to.equal(90);
+            expect(instance.pop()).to.equal(70);
+            expect(instance.pop()).to.equal(65);
+            expect(instance.pop()).to.equal(60);
+            expect(instance.pop()).to.equal(50);
+            expect(instance.pop()).to.equal(40);
+            expect(instance.pop()).to.equal(10);
+            expect(instance.pop()).to.equal(5);
         });
     });
 
@@ -157,6 +216,27 @@ describe("DwayHeapNumber", () => {
         });
 
         it("should restate correctly when updating 4 to 1", () => {
+            instance.updateAll(4, 1);
+            expect(instance.pop()).to.equal(7);
+            expect(instance.pop()).to.equal(6);
+            expect(instance.pop()).to.equal(5);
+            expect(instance.pop()).to.equal(3);
+            expect(instance.pop()).to.equal(2);
+            expect(instance.pop()).to.equal(1);
+            expect(instance.pop()).to.equal(1);
+            expect(instance.pop()).to.equal(1);
+        });
+
+        it("should restate correctly when branchFactor is 3", () => {
+            instance = new DwayHeapNumber(3);
+            instance.push(7);
+            instance.push(4);
+            instance.push(6);
+            instance.push(4);
+            instance.push(3);
+            instance.push(1);
+            instance.push(5);
+            instance.push(2);
             instance.updateAll(4, 1);
             expect(instance.pop()).to.equal(7);
             expect(instance.pop()).to.equal(6);
