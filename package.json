@@ -1,0 +1,27 @@
+{
+  "name": "data-structures",
+  "version": "1.0.0",
+  "description": "Self implementation from Advanced Algorithms and Data Structures",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuto-yuto/data-structures.git"
+  },
+  "keywords": [
+    "advanced",
+    "algorithms",
+    "data",
+    "structures"
+  ],
+  "author": "yuto-yuto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yuto-yuto/data-structures/issues"
+  },
+  "homepage": "https://github.com/yuto-yuto/data-structures#readme"
+}
