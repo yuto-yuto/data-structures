@@ -130,13 +130,6 @@ export abstract class DwayHeapBaseOptimized<T> {
         }
 
         this.positions.delete(oldValue);
-        const newValuePositions = this.positions.get(newValue);
-        if (newValuePositions === undefined) {
-            this.positions.set(newValue, indexes.slice());
-        } else {
-            newValuePositions.push(...indexes);
-            this.positions.set(newValue, newValuePositions);
-        }
 
         const compareResult = this.compare(oldValue, newValue);
         if (compareResult === -1) {

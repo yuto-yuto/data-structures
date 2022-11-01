@@ -70,6 +70,19 @@ describe("DwayHeapNumber", () => {
     });
 
     describe("remove", () => {
+        it("should not restate after removing the last leaf", () => {
+            instance.push(2);
+            instance.push(9);
+            instance.push(4);
+            instance.push(6);
+            instance.push(8);
+
+            instance.remove(6);
+            expect(instance.pop()).to.equal(9);
+            expect(instance.pop()).to.equal(8);
+            expect(instance.pop()).to.equal(4);
+            expect(instance.pop()).to.equal(2);
+        });
         it("should restate after removing top node", () => {
             instance.push(2);
             instance.push(9);

@@ -1,3 +1,4 @@
+import { DwayHeapBaseOptimized } from "./DwayHeapBaseOptimized";
 import { DwayHeapNumber, DwayHeapNumberOptimized } from "./DwayHeapNumber";
 
 function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
@@ -24,7 +25,7 @@ function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
 
 {
     console.log("=== random value === ")
-    for (let ii = 0; ii < 10; ii++) {
+    for (let ii = 0; ii < 1000; ii++) {
         const numberHeap = DwayHeapNumberFactory(2, 4);
         const values = Array.from(Array(100)).map(() => Math.floor(Math.random() * 100));
         for (const value of values) {
@@ -62,6 +63,7 @@ function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
         for (let i = numberHeap.size; i > 0; i--) {
             results.push(numberHeap.pop()!);
         }
+
         const isSorted = isDescSorted(results);
         if (!isSorted) {
             console.log(`Length: ${results.length}`);
@@ -75,6 +77,7 @@ function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
 function isDescSorted(nums: number[]) {
     for (let i = 0; i < nums.length - 1; i++) {
         if (nums[i] < nums[i + 1]) {
+            console.log(`wrong order: ${nums[i]}, ${nums[i + 1]}`)
             return false;
         }
     }
