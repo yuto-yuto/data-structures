@@ -1,12 +1,12 @@
 import "mocha";
 import { expect } from "chai";
-import { DwayHeapNumber } from "../dway_heap/DwayHeapNumber";
+import { DwayHeapNumber, DwayHeapNumberOptimized } from "../dway_heap/DwayHeapNumber";
 
 describe("DwayHeapNumber", () => {
-    let instance: DwayHeapNumber;
+    let instance: DwayHeapNumberOptimized;
 
     beforeEach(() => {
-        instance = new DwayHeapNumber();
+        instance = new DwayHeapNumberOptimized();
     });
 
     describe("push/pop", () => {
@@ -54,19 +54,15 @@ describe("DwayHeapNumber", () => {
             });
 
             it("should when branchFactor is 3", () => {
-                instance = new DwayHeapNumber(3);
+                instance = new DwayHeapNumberOptimized(3);
                 instance.push(2);
                 instance.push(9);
                 instance.push(4);
                 instance.push(6);
                 instance.push(8);
-                instance.showTree();
                 expect(instance.pop()).to.equal(9);
-                instance.showTree();
                 expect(instance.pop()).to.equal(8);
-                instance.showTree();
                 expect(instance.pop()).to.equal(6);
-                instance.showTree();
                 expect(instance.pop()).to.equal(4);
                 expect(instance.pop()).to.equal(2);
             });
@@ -228,7 +224,7 @@ describe("DwayHeapNumber", () => {
         });
 
         it("should restate correctly when branchFactor is 3", () => {
-            instance = new DwayHeapNumber(3);
+            instance = new DwayHeapNumberOptimized(3);
             instance.push(7);
             instance.push(4);
             instance.push(6);

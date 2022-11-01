@@ -1,7 +1,14 @@
-import { DwayHeapNumber } from "./DwayHeapNumber";
+import { DwayHeapNumber, DwayHeapNumberOptimized } from "./DwayHeapNumber";
+
+function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
+    if (type === 1) {
+        return new DwayHeapNumber(branchFactor);
+    }
+    return new DwayHeapNumberOptimized(branchFactor);
+}
 
 {
-    const numberHeap = new DwayHeapNumber();
+    const numberHeap = DwayHeapNumberFactory(2);
     numberHeap.push(2); numberHeap.showTree(); // 2
     numberHeap.push(9); numberHeap.showTree(); // 9, 2
     numberHeap.push(4); numberHeap.showTree(); // 9, 2, 4
@@ -18,7 +25,7 @@ import { DwayHeapNumber } from "./DwayHeapNumber";
 {
     console.log("=== random value === ")
     for (let ii = 0; ii < 10; ii++) {
-        const numberHeap = new DwayHeapNumber(4);
+        const numberHeap = DwayHeapNumberFactory(2, 4);
         const values = Array.from(Array(100)).map(() => Math.floor(Math.random() * 100));
         for (const value of values) {
             numberHeap.push(value);
