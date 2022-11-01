@@ -71,7 +71,18 @@ export abstract class DwayHeapBaseOptimized<T> {
         if (indexes === undefined) {
             throw ReferenceError(`element nod found: ${element}`);
         }
-        const firstOccurrenceIndex = indexes.shift()!;
+        const firstOccurrenceIndex = indexes[0];
+        if (firstOccurrenceIndex === this.size - 1) {
+            this.popElement(this.size - 1);
+            return;
+        }
+
+        if (indexes.length === 1) {
+            this.positions.delete(element);
+        } else {
+            indexes.shift();
+        }
+
         const lastElement = this.popElement(this.size - 1);
         this.setElementToPositions(lastElement, firstOccurrenceIndex);
 
