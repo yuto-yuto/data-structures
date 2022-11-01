@@ -142,26 +142,35 @@ export abstract class DwayHeapBaseOptimized<T> {
         let currentIndex = index;
 
         while (currentIndex < firstLeafIndex) {
-            let smallestChildIndex = this.branchFactor * currentIndex + 1;
-            const largestChildIndex = Math.min(this.branchFactor * currentIndex + this.branchFactor, this.size);
-            let highestPriorityElement = this.elements[smallestChildIndex];
-            let childIndex = smallestChildIndex;
+            const highestChild = this.getHighestPriorityChild(currentIndex);
 
-            for (let i = smallestChildIndex; i < largestChildIndex; i++) {
-                const compareResult = this.compare(highestPriorityElement, this.elements[i + 1]);
-                if (compareResult < 0) {
-                    highestPriorityElement = this.elements[i + 1];
-                    childIndex = i + 1;
-                }
-            }
-
-            if (this.compare(currentElement, highestPriorityElement) < 0) {
-                this.swap(currentIndex, childIndex);
-                currentIndex = childIndex;
+            if (this.compare(currentElement, highestChild.element) < 0) {
+                this.elements[currentIndex] = this.elements[highestChild.index];
+                currentIndex = highestChild.index;
             } else {
                 break;
             }
         }
+        this.elements[currentIndex] = currentElement;
+    }
+
+    private getHighestPriorityChild(currentIndex: number): { index: number, element: T } {
+        let smallestChildIndex = this.branchFactor * currentIndex + 1;
+        const largestChildIndex = Math.min(this.branchFactor * currentIndex + this.branchFactor, this.size);
+        let highestPriorityElement = this.elements[smallestChildIndex];
+        let childIndex = smallestChildIndex;
+
+        for (let i = smallestChildIndex; i < largestChildIndex; i++) {
+            const compareResult = this.compare(highestPriorityElement, this.elements[i + 1]);
+            if (compareResult < 0) {
+                highestPriorityElement = this.elements[i + 1];
+                childIndex = i + 1;
+            }
+        }
+        return {
+            index: childIndex,
+            element: highestPriorityElement,
+        };
     }
 
     private bubbleUpOptimized(index = this.size - 1): void {
