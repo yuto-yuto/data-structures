@@ -34,8 +34,8 @@ export abstract class DwayHeapBaseOptimized<T> {
         console.log(this.elements);
     }
 
-    public peek(): T | undefined {
-        return this.elements[0];
+    public peek(index = 0): T | undefined {
+        return this.elements[index];
     }
     /**
      * Remove the first element and return it if the heap is not empty.

@@ -8,7 +8,8 @@ function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
     return new DwayHeapNumberOptimized(branchFactor);
 }
 
-{
+
+function run1() {
     const numberHeap = DwayHeapNumberFactory(2);
     numberHeap.push(2); numberHeap.showTree(); // 2
     numberHeap.push(9); numberHeap.showTree(); // 9, 2
@@ -23,7 +24,7 @@ function DwayHeapNumberFactory(type: 1 | 2, branchFactor: number = 2) {
     console.log(`Result: ${results}`);
 }
 
-{
+function run2() {
     console.log("=== random value === ")
     for (let ii = 0; ii < 1000; ii++) {
         const numberHeap = DwayHeapNumberFactory(2, 4);
@@ -83,3 +84,47 @@ function isDescSorted(nums: number[]) {
     }
     return true;
 }
+
+function run3() {
+    // const count = 10000000;
+    const count = 1000000;
+    const heaps = [
+        new DwayHeapNumber(),
+        new DwayHeapNumberOptimized(),
+    ];
+
+    for (const heap of heaps) {
+        console.time("total1")
+
+        console.time("push1")
+        for (let i = 0; i < count; i++) {
+            const random = Math.floor(Math.random() * count);
+            heap.push(random);
+        }
+        console.timeEnd("push1")
+
+        console.time("update1")
+        for (let i = 0; i < 1000; i++) {
+            const newValue = Math.floor(Math.random() * count);
+            const index = Math.floor(Math.random() * count);
+            heap.update(heap.peek(index)!, newValue);
+        }
+        console.timeEnd("update1")
+
+        console.time("remove1")
+        for (let i = 0; i < 200; i++) {
+            const index = Math.floor(Math.random() * 200 );
+            heap.remove(heap.peek(index)!);
+        }
+        console.timeEnd("remove1")
+
+        console.time("pop1")
+        while (heap.pop() !== undefined) { }
+        console.timeEnd("pop1")
+
+        console.timeEnd("total1")
+        console.log("-----------")
+    }
+}
+
+run3()
