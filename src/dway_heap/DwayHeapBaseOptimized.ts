@@ -172,22 +172,4 @@ export abstract class DwayHeapBaseOptimized<T> {
             element: highestPriorityElement,
         };
     }
-
-    private bubbleUpOptimized(index = this.size - 1): void {
-        while (index > 0) {
-            const parentIndex = Math.floor((index - 1) / this._branchFactor);
-            if (this.compare(this.elements[parentIndex], this.elements[index]) === 1) {
-                this.swap(index, parentIndex);
-                index = parentIndex;
-            } else {
-                break;
-            }
-        }
-    }
-
-    private swap(index1: number, index2: number): void {
-        const temp = this.elements[index1];
-        this.elements[index1] = this.elements[index2];
-        this.elements[index2] = temp;
-    }
 }
