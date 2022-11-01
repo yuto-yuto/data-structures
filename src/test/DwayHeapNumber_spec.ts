@@ -185,6 +185,23 @@ describe("DwayHeapNumber", () => {
             expect(instance.pop()).to.equal(4);
             expect(instance.pop()).to.equal(2);
         });
+
+        it("should restate when updating a middle node multiple times", () => {
+            instance.push(2);
+            instance.push(9);
+            instance.push(4);
+            instance.push(6);
+            instance.push(8);
+
+            instance.update(8, 10);
+            instance.update(10, 8);
+            instance.update(8, 10);
+            expect(instance.pop()).to.equal(10);
+            expect(instance.pop()).to.equal(9);
+            expect(instance.pop()).to.equal(6);
+            expect(instance.pop()).to.equal(4);
+            expect(instance.pop()).to.equal(2);
+        });
     });
 
     describe("updateAll", () => {

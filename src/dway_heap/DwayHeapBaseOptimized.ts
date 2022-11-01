@@ -46,7 +46,7 @@ export abstract class DwayHeapBaseOptimized<T> {
         }
 
         // Must not delete the first element here
-        const firstElement = this.elements[0];
+        const firstElement = this.popElement(0, false);
         const lastElement = this.popElement(this.size - 1);
         this.setElementToPositions(lastElement, 0);
         this.pushDown();
@@ -84,25 +84,47 @@ export abstract class DwayHeapBaseOptimized<T> {
     }
 
     public update(oldValue: T, newValue: T): void {
+        if (this.compare(oldValue, newValue) === 0) {
+            return;
+        }
         const indexes = this.positions.get(oldValue);
         if (indexes === undefined) {
             throw Error(`oldValue not found: ${oldValue}`);
         }
 
-        this.setElementToPositions(newValue, indexes[0]);
+        const foundIndex = indexes[0];
+        if (indexes.length === 1) {
+            this.positions.delete(oldValue);
+        } else {
+            this.positions.set(oldValue, indexes.slice(1));
+        }
+
+        this.setElementToPositions(newValue, foundIndex);
         const compareResult = this.compare(oldValue, newValue);
         if (compareResult === -1) {
-            this.bubbleUp(indexes[0]);
+            this.bubbleUp(foundIndex);
         } else if (compareResult === 1) {
-            this.pushDown(indexes[0]);
+            this.pushDown(foundIndex);
         }
     }
 
     public updateAll(oldValue: T, newValue: T): void {
+        if (this.compare(oldValue, newValue) === 0) {
+            return;
+        }
         const indexes = this.positions.get(oldValue);
 
         if (indexes === undefined) {
             throw Error(`oldValue not found: ${oldValue}`);
+        }
+
+        this.positions.delete(oldValue);
+        const newValuePositions = this.positions.get(newValue);
+        if (newValuePositions === undefined) {
+            this.positions.set(newValue, indexes.slice());
+        } else {
+            newValuePositions.push(...indexes);
+            this.positions.set(newValue, newValuePositions);
         }
 
         const compareResult = this.compare(oldValue, newValue);
@@ -131,20 +153,25 @@ export abstract class DwayHeapBaseOptimized<T> {
                 elementPositions.splice(indexOfOldIndex, 1);
             }
             elementPositions.push(index);
-            this.positions.set(element, elementPositions);
         }
         this.elements[index] = element;
     }
 
-    private popElement(index: number): T {
-        const element = this.elements.splice(index, 1)[0];
+    private popElement(index: number, isRemove = true): T {
+        const element = this.elements[index];
         const indexes = this.positions.get(element)!;
 
         if (indexes.length === 1) {
             this.positions.delete(element);
         } else if (indexes.length > 1) {
             const indexToBeDeleted = indexes.indexOf(index);
+            if (indexToBeDeleted < 0) {
+                throw RangeError(`index was not found: ${index}`);
+            }
             indexes.splice(indexToBeDeleted, 1);
+        }
+        if (isRemove) {
+            this.elements.splice(index, 1);
         }
         return element;
     }
@@ -157,7 +184,6 @@ export abstract class DwayHeapBaseOptimized<T> {
             if (this.compare(this.elements[parentIndex], currentElement) < 0) {
                 this.setElementToPositions(this.elements[parentIndex], currentIndex, parentIndex);
                 currentIndex = parentIndex;
-
             } else {
                 break;
             }
@@ -180,7 +206,7 @@ export abstract class DwayHeapBaseOptimized<T> {
                 break;
             }
         }
-        this.setElementToPositions(currentElement, currentIndex);
+        this.setElementToPositions(currentElement, currentIndex, index);
     }
 
     private getHighestPriorityChild(currentIndex: number): { index: number, element: T } {
