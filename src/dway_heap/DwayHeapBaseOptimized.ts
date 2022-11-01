@@ -1,7 +1,7 @@
 import { DEFAULT_BRANCH_FACTOR } from "./DwayHeapDef";
 
 export abstract class DwayHeapBaseOptimized<T> {
-    private _elements = new WeakMap();
+    private positions = new Map<T, number[]>();
     constructor(
         private readonly _branchFactor = DEFAULT_BRANCH_FACTOR,
         private elements: T[] = [],
@@ -47,8 +47,8 @@ export abstract class DwayHeapBaseOptimized<T> {
 
         // Must not delete the first element here
         const firstElement = this.elements[0];
-        const lastElement = this.elements.pop();
-        this.elements[0] = lastElement!;
+        const lastElement = this.popElement(this.size - 1);
+        this.setElementToPositions(lastElement, 0);
         this.pushDown();
         return firstElement;
     }
@@ -58,7 +58,7 @@ export abstract class DwayHeapBaseOptimized<T> {
             throw new TypeError("Invalid argument. 'undefined', 'null', and 'function' can not be assigned.");
         }
 
-        this.elements.push(element);
+        this.setElementToPositions(element, this.size);
         this.bubbleUp();
     }
 
@@ -67,42 +67,41 @@ export abstract class DwayHeapBaseOptimized<T> {
             throw ReferenceError("")
         }
 
-        const index = this.elements.findIndex((x) => this.equal(x, element));
-        if (index < 0) {
+        const indexes = this.positions.get(element);
+        if (indexes === undefined) {
             throw ReferenceError(`element nod found: ${element}`);
         }
+        const firstOccurrenceIndex = indexes.shift()!;
+        const lastElement = this.popElement(this.size - 1);
+        this.setElementToPositions(lastElement, firstOccurrenceIndex);
 
-        this.elements[index] = this.elements.pop()!;
-        const compareResult = this.compare(element, this.elements[index])
+        const compareResult = this.compare(element, this.elements[firstOccurrenceIndex])
         if (compareResult === -1) {
-            this.bubbleUp(index);
+            this.bubbleUp(firstOccurrenceIndex);
         } else if (compareResult === 1) {
-            this.pushDown(index);
+            this.pushDown(firstOccurrenceIndex);
         }
     }
 
     public update(oldValue: T, newValue: T): void {
-        const index = this.elements.findIndex((x) => this.equal(x, oldValue));
-        if (index < 0) {
+        const indexes = this.positions.get(oldValue);
+        if (indexes === undefined) {
             throw Error(`oldValue not found: ${oldValue}`);
         }
 
-        this.elements[index] = newValue;
+        this.setElementToPositions(newValue, indexes[0]);
         const compareResult = this.compare(oldValue, newValue);
         if (compareResult === -1) {
-            this.bubbleUp(index);
+            this.bubbleUp(indexes[0]);
         } else if (compareResult === 1) {
-            this.pushDown(index);
+            this.pushDown(indexes[0]);
         }
     }
 
     public updateAll(oldValue: T, newValue: T): void {
-        const indexes = this.elements.map((x, index) => {
-            return { value: x, index };
-        }).filter((x) => this.equal(x.value, oldValue))
-            .map((x) => x.index);
+        const indexes = this.positions.get(oldValue);
 
-        if (indexes.length === 0) {
+        if (indexes === undefined) {
             throw Error(`oldValue not found: ${oldValue}`);
         }
 
@@ -110,30 +109,60 @@ export abstract class DwayHeapBaseOptimized<T> {
         if (compareResult === -1) {
             // bubbleUp must start with the smaller index (near to top node)
             for (const index of indexes) {
-                this.elements[index] = newValue;
+                this.setElementToPositions(newValue, index);
                 this.bubbleUp(index);
             }
         } else if (compareResult === 1) {
             // pushDown must start with the bigger index (near to leaf)
             for (const index of indexes.sort((a, b) => b - a)) {
-                this.elements[index] = newValue;
+                this.setElementToPositions(newValue, index);
                 this.pushDown(index);
             }
         }
     }
 
+    private setElementToPositions(element: T, index: number, oldIndex?: number): void {
+        const elementPositions = this.positions.get(element);
+        if (elementPositions === undefined) {
+            this.positions.set(element, [index]);
+        } else {
+            if (oldIndex !== undefined) {
+                const indexOfOldIndex = elementPositions.indexOf(oldIndex);
+                elementPositions.splice(indexOfOldIndex, 1);
+            }
+            elementPositions.push(index);
+            this.positions.set(element, elementPositions);
+        }
+        this.elements[index] = element;
+    }
+
+    private popElement(index: number): T {
+        const element = this.elements.splice(index, 1)[0];
+        const indexes = this.positions.get(element)!;
+
+        if (indexes.length === 1) {
+            this.positions.delete(element);
+        } else if (indexes.length > 1) {
+            const indexToBeDeleted = indexes.indexOf(index);
+            indexes.splice(indexToBeDeleted, 1);
+        }
+        return element;
+    }
+
     private bubbleUp(index = this.size - 1): void {
         const currentElement = this.elements[index];
-        while (index > 0) {
-            const parentIndex = Math.floor((index - 1) / this._branchFactor);
+        let currentIndex = index;
+        while (currentIndex > 0) {
+            const parentIndex = Math.floor((currentIndex - 1) / this._branchFactor);
             if (this.compare(this.elements[parentIndex], currentElement) < 0) {
-                this.elements[index] = this.elements[parentIndex];
-                index = parentIndex;
+                this.setElementToPositions(this.elements[parentIndex], currentIndex, parentIndex);
+                currentIndex = parentIndex;
+
             } else {
                 break;
             }
         }
-        this.elements[index] = currentElement;
+        this.setElementToPositions(currentElement, currentIndex, index);
     }
 
     private pushDown(index = 0): void {
@@ -145,13 +174,13 @@ export abstract class DwayHeapBaseOptimized<T> {
             const highestChild = this.getHighestPriorityChild(currentIndex);
 
             if (this.compare(currentElement, highestChild.element) < 0) {
-                this.elements[currentIndex] = this.elements[highestChild.index];
+                this.setElementToPositions(this.elements[highestChild.index], currentIndex, highestChild.index);
                 currentIndex = highestChild.index;
             } else {
                 break;
             }
         }
-        this.elements[currentIndex] = currentElement;
+        this.setElementToPositions(currentElement, currentIndex);
     }
 
     private getHighestPriorityChild(currentIndex: number): { index: number, element: T } {
