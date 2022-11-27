@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { DwayHeapNumber, DwayHeapNumberOptimized } from "../dway_heap/DwayHeapNumber";
+import { DwayHeapNumber, DwayHeapNumberOptimized } from "./DwayHeapNumber";
 
 describe("DwayHeapNumber", () => {
     let instance: DwayHeapNumberOptimized;
