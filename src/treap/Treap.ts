@@ -1,10 +1,10 @@
-import { Node } from "./node";
+import { Node } from "./Node";
 
 type HasParentNode = Node & { Parent: Node };
 export class Treap {
     private root?: Node;
 
-    public rightRotate(treap: Treap, target: Node): void {
+    public rightRotate(target: Node): void {
         if (!this.hasParent(target)) {
             throw new Error("Specified node is a root node")
         }
@@ -17,41 +17,41 @@ export class Treap {
         const parentOfParent = parent.Parent;
         if (parentOfParent) {
             if (parentOfParent.Left === parent) {
-                parentOfParent.setLeft(target);
+                parentOfParent.Left = target;
             } else {
-                parentOfParent.setRight(target);
+                parentOfParent.Right = target;
             }
         } else {
-            treap.root = target;
+            this.root = target;
         }
 
-        parent.setLeft(target.Right);
-        target.setRight(parent)
+        parent.Left = target.Right;
+        target.Right = parent
     }
 
-    public leftRotate(treap: Treap, target: Node): void {
+    public leftRotate(target: Node): void {
         if (!this.hasParent(target)) {
             throw new Error("Specified node is a root node")
         }
 
         const parent = target.Parent;
         if (parent.Right != target) {
-            throw new Error("Right rotation can be performed only on a Right node.");
+            throw new Error("Left rotation can be performed only on a Right node.");
         }
 
         const parentOfParent = parent.Parent;
         if (parentOfParent) {
             if (parentOfParent.Left === parent) {
-                parentOfParent.setLeft(target);
+                parentOfParent.Left = target;
             } else {
-                parentOfParent.setRight(target);
+                parentOfParent.Right = target;
             }
         } else {
-            treap.root = target;
+            this.root = target;
         }
 
-        parent.setRight(target.Left);
-        target.setLeft(parent)
+        parent.Right = target.Left;
+        target.Left = parent;
     }
 
     public search(node: Node | undefined, targetKey: string): Node | undefined {
@@ -64,6 +64,47 @@ export class Treap {
             return this.search(node.Left, targetKey);
         }
         return this.search(node.Right, targetKey);
+    }
+
+    public insert(key: string, priority: number): void {
+        let node = this.root;
+        let parent: Node | undefined;
+        const newNode = new Node(key, priority);
+
+        // Search for a parent leaf
+        while (node) {
+            parent = node;
+            if (node.biggerThan(key)) {
+                node = node.Right;
+            } else {
+                node = node.Left;
+            }
+        }
+
+        // Add the new node as a leaf
+        if (!parent) {
+            this.root = newNode;
+            return;
+        } else if (parent.biggerThan(key)) {
+            parent.Left = newNode;
+        } else {
+            parent.Right = newNode;
+        }
+
+        newNode.Parent = parent;
+
+        // Fix the priority violations
+        while (newNode.Parent && newNode.priority < newNode.Parent.priority) {
+            if (newNode == newNode.Parent.Left) {
+                this.rightRotate(newNode);
+            } else {
+                this.leftRotate(newNode);
+            }
+        }
+
+        if (!newNode.Parent) {
+            this.root = newNode;
+        }
     }
 
     /**

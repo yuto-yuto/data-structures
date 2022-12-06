@@ -3,34 +3,39 @@ export class Node {
     public get Left() {
         return this._left;
     }
-    private _right?: Node;
-
-    public get Right() {
-        return this._right;
-    }
-    private _parent?: Node;
-
-    public get Parent() {
-        return this._parent;
-    }
-
-    public constructor(
-        public readonly Key: string,
-        private readonly priority: number,
-    ) { }
-
-    public setLeft(node: Node | undefined): void {
+    public set Left(node: Node | undefined) {
         this._left = node;
         if (node) {
             node._parent = this;
         }
     }
-    public setRight(node: Node | undefined): void {
+
+    private _right?: Node;
+    public get Right() {
+        return this._right;
+    }
+    public set Right(node: Node | undefined) {
         this._right = node;
         if (node) {
             node._parent = this;
         }
     }
+
+    private _parent?: Node;
+    public get Parent() {
+        return this._parent;
+    }
+    public set Parent(node: Node | undefined) {
+        if (node) {
+            node._parent = this._parent;
+        }
+        this._parent = node;
+    }
+
+    public constructor(
+        public readonly Key: string,
+        public readonly priority: number,
+    ) { }
 
     public biggerThan(targetKey: string): boolean {
         for (let i = 0; i < this.Key.length; i++) {
