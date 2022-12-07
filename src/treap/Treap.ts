@@ -4,32 +4,33 @@ type HasParentNode = Node & { Parent: Node };
 export class Treap {
     private root?: Node;
 
-    public rightRotate(target: Node): void {
+    public rotateRight(target: Node): void {
         if (!this.hasParent(target)) {
             throw new Error("Specified node is a root node")
         }
 
         const parent = target.Parent;
-        if (parent.Left != target) {
+        if (parent.Left?.Key != target.Key) {
             throw new Error("Right rotation can be performed only on a left node.");
         }
 
         const parentOfParent = parent.Parent;
         if (parentOfParent) {
-            if (parentOfParent.Left === parent) {
+            if (parentOfParent.Left?.Key === parent.Key) {
                 parentOfParent.Left = target;
             } else {
                 parentOfParent.Right = target;
             }
         } else {
             this.root = target;
+            this.root.Parent = undefined;
         }
 
         parent.Left = target.Right;
         target.Right = parent
     }
 
-    public leftRotate(target: Node): void {
+    public rotateLeft(target: Node): void {
         if (!this.hasParent(target)) {
             throw new Error("Specified node is a root node")
         }
@@ -48,6 +49,7 @@ export class Treap {
             }
         } else {
             this.root = target;
+            this.root.Parent = undefined;
         }
 
         parent.Right = target.Left;
@@ -96,15 +98,86 @@ export class Treap {
         // Fix the priority violations
         while (newNode.Parent && newNode.priority < newNode.Parent.priority) {
             if (newNode == newNode.Parent.Left) {
-                this.rightRotate(newNode);
+                this.rotateRight(newNode);
             } else {
-                this.leftRotate(newNode);
+                this.rotateLeft(newNode);
             }
         }
 
         if (!newNode.Parent) {
             this.root = newNode;
         }
+    }
+
+    public remove(key: string): boolean {
+        const node = this.search(this.root, key);
+
+        if (!node) {
+            return false;
+        }
+
+        if (!this.hasParent(node) && this.isLeaf(node)) {
+            this.root = undefined;
+            return true;
+        }
+
+        while (!this.isLeaf(node)) {
+            if (node.Left && (!node.Right || node.Left.priority > node.Right.priority)) {
+                this.rotateRight(node.Left);
+            } else if (node.Right) {
+                this.rotateLeft(node.Right)
+            }
+
+            if (node.Parent && !this.hasParent(node.Parent)) {
+                this.root = node.Parent;
+            }
+        }
+
+        // the node became a leaf here. Parent must exist.
+        if (!node.Parent!.Left) {
+            node.Parent!.Left = undefined;
+        } else {
+            node.Parent!.Right = undefined;
+        }
+        return true;
+    }
+
+    public pop(): string {
+        if (!this.root) {
+            throw new Error("Treap is empty");
+        }
+        const key = this.root.Key;
+        this.remove(key);
+        return key;
+    }
+
+    public peek(): string {
+        if (!this.root) {
+            throw new Error("Treap is empty");
+        }
+        return this.root.Key;
+    }
+
+    public min(): string {
+        if (!this.root) {
+            throw new Error("Treap is empty");
+        }
+        let node = this.root;
+        while (node.Left) {
+            node = node.Left;
+        }
+        return node.Key;
+    }
+
+    public max(): string {
+        if (!this.root) {
+            throw new Error("Treap is empty");
+        }
+        let node = this.root;
+        while (node.Right) {
+            node = node.Right;
+        }
+        return node.Key;
     }
 
     /**
@@ -114,5 +187,9 @@ export class Treap {
      */
     private hasParent(node: Node): node is HasParentNode {
         return !!node.Parent;
+    }
+
+    private isLeaf(node: Node): boolean {
+        return !node.Left && !node.Right;
     }
 }
