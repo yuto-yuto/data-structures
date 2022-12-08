@@ -191,4 +191,33 @@ describe("Treap", () => {
             expect(water.Left).to.deep.equal(vodka);
         });
     });
+
+    describe("search", () => {
+        it("should return undefined when node is undefined", () => {
+            const result = instance.search(undefined, "abc");
+            expect(result).to.be.undefined;
+        });
+
+        it("should return a node when key is found", () => {
+            const node = new Node("Apple", 10);
+            const result = instance.search(node, "Apple");
+            expect(result).to.equal(node);
+        });
+
+        it("should return a node when key is found at right node", () => {
+            const apple = new Node("Apple", 10);
+            const bacon = new Node("Bacon", 10);
+            apple.Right = bacon;
+            const result = instance.search(apple, "Bacon");
+            expect(result).to.equal(bacon);
+        });
+
+        it("should return a node when key is found at left node", () => {
+            const apple = new Node("Apple", 10);
+            const bacon = new Node("Bacon", 10);
+            bacon.Left = apple;
+            const result = instance.search(bacon, "Apple");
+            expect(result).to.equal(apple);
+        });
+    });
 });

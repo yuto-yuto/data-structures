@@ -67,6 +67,10 @@ export class Treap {
         }
         return this.search(node.Right, targetKey);
     }
+   
+    public searchFromRoot(targetKey: string): Node | undefined {
+        return this.search(this.root, targetKey);
+    }
 
     public insert(key: string, priority: number): void {
         let node = this.root;
