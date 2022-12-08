@@ -10,13 +10,13 @@ export class Treap {
         }
 
         const parent = target.Parent;
-        if (parent.Left?.Key != target.Key) {
+        if (parent.Left != target) {
             throw new Error("Right rotation can be performed only on a left node.");
         }
 
         const parentOfParent = parent.Parent;
         if (parentOfParent) {
-            if (parentOfParent.Left?.Key === parent.Key) {
+            if (parentOfParent.Left === parent) {
                 parentOfParent.Left = target;
             } else {
                 parentOfParent.Right = target;
@@ -36,7 +36,7 @@ export class Treap {
         }
 
         const parent = target.Parent;
-        if (parent.Right != target) {
+        if (parent.Right !== target) {
             throw new Error("Left rotation can be performed only on a Right node.");
         }
 

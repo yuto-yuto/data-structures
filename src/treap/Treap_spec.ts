@@ -27,52 +27,54 @@ describe("Treap", () => {
         });
 
         it("should set the node as root when the parent of parent doesn't exist", () => {
-            //     Flour
-            //      /   \
-            // Butter   Water
-            //     \
-            //    Eggs
+            //         Flour
+            //          /   \
+            //     Butter   Water
+            //     /   \
+            // Apple   Eggs
             const flour = new Node("Flour", 10);
             const butter = new Node("Butter", 76);
             const eggs = new Node("Eggs", 129)
             const water = new Node("Water", 32);
+            const apple = new Node("Apple", 2)
             flour.Left = butter;
             flour.Right = water;
             butter.Right = eggs;
+            butter.Left = apple;
 
             instance.rotateRight(butter)
-            // Butter
-            //     \
-            //     Flour
-            //      /  \
-            //    Eggs Water
+            //     Butter
+            //     /    \
+            // Apple    Flour
+            //           /  \
+            //         Eggs Water
             expect(butter.Parent).to.be.undefined;
-            expect(butter.Left).to.be.undefined;
+            expect(butter.Left).to.deep.equal(apple);
             expect(butter.Right).to.deep.equal(flour);
             expect(flour.Left).to.deep.equal(eggs);
             expect(flour.Right).to.deep.equal(water);
         });
 
         it("should rotate correctly when the parent of parent exist", () => {
-            //       Flour
-            //        /   \
-            //   Butter   Water
-            //   /    \
-            // Bacon  Eggs
-            //  /  \
-            // A    Bee
+            //          Flour
+            //           /   \
+            //      Butter   Water
+            //      /    \
+            //    Bacon  Eggs
+            //    /   \
+            // Apple  Bee
             const flour = new Node("Flour", 10);
             const butter = new Node("Butter", 76);
             const eggs = new Node("Eggs", 129)
             const water = new Node("Water", 32);
             const bacon = new Node("Bacon", 77)
-            const a = new Node("A", 2);
+            const apple = new Node("Apple", 2);
             const bee = new Node("Bee", 6);
             flour.Left = butter;
             flour.Right = water;
             butter.Right = eggs;
             butter.Left = bacon;
-            bacon.Left = a;
+            bacon.Left = apple;
             bacon.Right = bee;
 
             instance.rotateRight(bacon)
@@ -80,20 +82,113 @@ describe("Treap", () => {
             //        /   \
             //   Bacon   Water
             //   /    \
-            //  A    Butter
-            //      /    \
+            // Apple Butter
+            //       /    \
             //     Bee   Eggs
             expect(flour.Parent).to.be.undefined;
             expect(flour.Left).to.deep.equal(bacon);
             expect(flour.Right).to.deep.equal(water);
 
             expect(bacon.Parent).to.deep.equal(flour);
-            expect(bacon.Left).to.deep.equal(a);
+            expect(bacon.Left).to.deep.equal(apple);
             expect(bacon.Right).to.deep.equal(butter);
 
             expect(butter.Parent).to.deep.equal(bacon);
             expect(butter.Left).to.deep.equal(bee);
             expect(butter.Right).to.deep.equal(eggs);
+        });
+    });
+    describe("rotateLeft", () => {
+        it("should throw an error when the target is a root", () => {
+            const node = new Node("Flour", 10);
+            const result = () => instance.rotateLeft(node)
+            expect(result).to.throw("Specified node is a root node")
+        });
+
+        it("should throw an error when the target is a right node", () => {
+            const root = new Node("Flour", 10);
+            const node = new Node("Water", 32);
+            node.Parent = root;
+            root.Left = node;
+            const result = () => instance.rotateLeft(node)
+            expect(result).to.throw(/only on a Right node/)
+        });
+
+        it("should set the node as root when the parent of parent doesn't exist", () => {
+            //     Flour
+            //      /   \
+            // Butter   Water
+            //          /   \
+            //        Vodka  XYZ
+            const flour = new Node("Flour", 10);
+            const butter = new Node("Butter", 76);
+            const xyz = new Node("XYZ", 129)
+            const water = new Node("Water", 32);
+            const vodka = new Node("Vodka", 60);
+            flour.Left = butter;
+            flour.Right = water;
+            water.Right = xyz;
+            water.Left = vodka;
+
+            instance.rotateLeft(water)
+            //      Water
+            //      /    \
+            //    Flour  XYZ
+            //    /   \
+            // Butter Vodka
+            expect(water.Parent).to.be.undefined;
+            expect(water.Right).to.equal(xyz);
+            expect(water.Left).to.deep.equal(flour);
+            expect(flour.Right).to.deep.equal(vodka);
+            expect(flour.Left).to.deep.equal(butter);
+        });
+
+        it("should rotate correctly when the parent of parent exist", () => {
+            //     Flour
+            //      /   \
+            // Butter   Water
+            //          /   \
+            //        Vodka  XYZ
+            //               /  \
+            //            XXX   ZZZ
+            const flour = new Node("Flour", 10);
+            const butter = new Node("Butter", 76);
+            const xyz = new Node("XYZ", 129)
+            const water = new Node("Water", 32);
+            const vodka = new Node("Vodka", 60);
+            const xxx = new Node("XXX", 5);
+            const zzz = new Node("ZZZ", 7);
+
+            flour.Left = butter;
+            flour.Right = water;
+            water.Right = xyz;
+            water.Left = vodka;
+            xyz.Left = xxx;
+            xyz.Right = zzz;
+
+            instance.rotateLeft(xyz)
+            //      Flour
+            //      /   \
+            // Butter   XYZ
+            //          /  \
+            //        Water ZZZ
+            //        /  \
+            //     Vodka  XXX
+            expect(flour.Parent).to.be.undefined;
+            expect(flour.Right).to.equal(xyz);
+            expect(flour.Left).to.deep.equal(butter);
+
+            expect(butter.Parent).to.equal(flour);
+            expect(butter.Right).to.be.undefined;
+            expect(butter.Left).to.be.undefined;
+
+            expect(xyz.Parent).to.equal(flour);
+            expect(xyz.Right).to.equal(zzz);
+            expect(xyz.Left).to.deep.equal(water);
+
+            expect(water.Parent).to.equal(xyz);
+            expect(water.Right).to.equal(xxx);
+            expect(water.Left).to.deep.equal(vodka);
         });
     });
 });
