@@ -3,11 +3,24 @@ import { expect } from "chai";
 import { Treap } from "./Treap";
 import { Node } from "./Node";
 
+class TreapEx extends Treap {
+    public rotateRight(target: Node): void {
+        super.rotateRight(target);
+    }
+    public rotateLeft(target: Node): void {
+        super.rotateLeft(target);
+    }
+
+    public search(targetKey: string): Node | undefined {
+        return super.search(targetKey);
+    }
+}
+
 describe("Treap", () => {
-    let instance: Treap;
+    let instance: TreapEx;
 
     beforeEach(() => {
-        instance = new Treap();
+        instance = new TreapEx();
     });
 
     describe("rotateRight", () => {
@@ -192,32 +205,96 @@ describe("Treap", () => {
         });
     });
 
+    describe("Insert", () => {
+        it("should add to the root for the first insertion", () => {
+            instance.insert("A", 10);
+            const result = instance.search("A");
+            expect(result?.Parent).to.be.undefined;
+        });
+
+        context("new key is bigger than original", () => {
+            it("should add a new node to right", () => {
+                instance.insert("A", 10);
+                instance.insert("B", 20);
+                const result = instance.search("A");
+                expect(result?.Right?.Key).to.equal("B")
+            });
+
+            it("should add a new node to right for second level", () => {
+                instance.insert("A", 10);
+                instance.insert("B", 20);
+                instance.insert("BB", 30);
+                const result = instance.search("B");
+                expect(result?.Right?.Key).to.equal("BB")
+            });
+        });
+
+        context("new key is smaller than original", () => {
+            it("should add a new node to left", () => {
+                instance.insert("B", 10);
+                instance.insert("A", 20);
+                const result = instance.search("B");
+                expect(result?.Left?.Key).to.equal("A")
+            });
+
+            it("should add a new node to left for second level", () => {
+                instance.insert("B", 10);
+                instance.insert("AA", 20);
+                instance.insert("A", 30);
+                const result = instance.search("AA");
+                expect(result?.Left?.Key).to.equal("A")
+            });
+        });
+
+        context("rotation", () => {
+            it("should rotate right", () => {
+                instance.insert("B", 10);
+                instance.insert("A", 5);
+                const result = instance.search("A");
+                expect(result?.Right?.Key).to.equal("B")
+            });
+
+            it("should rotate left", () => {
+                instance.insert("A", 20);
+                instance.insert("B", 10);
+                const result = instance.search("B");
+                expect(result?.Left?.Key).to.equal("A")
+            });
+        });
+    });
+
     describe("search", () => {
         it("should return undefined when node is undefined", () => {
-            const result = instance.search(undefined, "abc");
+            const result = instance.search("abc");
             expect(result).to.be.undefined;
         });
 
         it("should return a node when key is found", () => {
-            const node = new Node("Apple", 10);
-            const result = instance.search(node, "Apple");
-            expect(result).to.equal(node);
+            instance.insert("Apple", 10);
+            const result = instance.search("Apple");
+            expect(result?.Key).to.equal("Apple");
+            expect(result?.priority).to.equal(10);
         });
 
         it("should return a node when key is found at right node", () => {
-            const apple = new Node("Apple", 10);
-            const bacon = new Node("Bacon", 10);
-            apple.Right = bacon;
-            const result = instance.search(apple, "Bacon");
-            expect(result).to.equal(bacon);
+            instance.insert("Apple", 10);
+            instance.insert("Bacon", 10);
+            const result = instance.search("Bacon");
+            expect(result?.Parent?.Right?.Key).to.equal("Bacon");
+            expect(result?.Parent?.Right?.priority).to.equal(10);
         });
 
         it("should return a node when key is found at left node", () => {
-            const apple = new Node("Apple", 10);
-            const bacon = new Node("Bacon", 10);
-            bacon.Left = apple;
-            const result = instance.search(bacon, "Apple");
-            expect(result).to.equal(apple);
+            instance.insert("Bacon", 10);
+            instance.insert("Apple", 10);
+            const result = instance.search("Apple");
+            expect(result?.Parent?.Left?.Key).to.equal("Apple");
+            expect(result?.Parent?.Left?.priority).to.equal(10);
+        });
+    });
+
+    describe("remove", () => {
+        it("", () => {
         });
     });
 });

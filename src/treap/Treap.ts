@@ -1,10 +1,21 @@
 import { Node } from "./Node";
 
+interface ITreap {
+    contains(targetKey: string): boolean;
+    insert(key: string, priority: number): void;
+    remove(key: string): boolean;
+    pop(): string;
+    peek(): string;
+    min(): string;
+    max(): string;
+}
+
 type HasParentNode = Node & { Parent: Node };
-export class Treap {
+export class Treap implements ITreap{
     private root?: Node;
 
-    public rotateRight(target: Node): void {
+    // it's protected for writing test
+    protected rotateRight(target: Node): void {
         if (!this.hasParent(target)) {
             throw new Error("Specified node is a root node")
         }
@@ -30,7 +41,7 @@ export class Treap {
         target.Right = parent
     }
 
-    public rotateLeft(target: Node): void {
+    protected rotateLeft(target: Node): void {
         if (!this.hasParent(target)) {
             throw new Error("Specified node is a root node")
         }
@@ -56,20 +67,24 @@ export class Treap {
         target.Left = parent;
     }
 
-    public search(node: Node | undefined, targetKey: string): Node | undefined {
-        if (!node) {
-            return undefined;
+    // it's protected for writing test
+    protected search(targetKey: string): Node | undefined {
+        const recursive = (node: Node | undefined, targetKey: string): Node | undefined => {
+            if (!node) {
+                return undefined;
+            }
+            if (node.Key == targetKey) {
+                return node;
+            } else if (node.biggerThan(targetKey)) {
+                return recursive(node.Left, targetKey);
+            }
+            return recursive(node.Right, targetKey);
         }
-        if (node.Key == targetKey) {
-            return node;
-        } else if (node.biggerThan(targetKey)) {
-            return this.search(node.Left, targetKey);
-        }
-        return this.search(node.Right, targetKey);
+        return recursive(this.root, targetKey);
     }
-   
-    public searchFromRoot(targetKey: string): Node | undefined {
-        return this.search(this.root, targetKey);
+
+    public contains(targetKey: string): boolean {
+        return !!this.search(targetKey);
     }
 
     public insert(key: string, priority: number): void {
@@ -81,9 +96,9 @@ export class Treap {
         while (node) {
             parent = node;
             if (node.biggerThan(key)) {
-                node = node.Right;
-            } else {
                 node = node.Left;
+            } else {
+                node = node.Right;
             }
         }
 
@@ -114,7 +129,7 @@ export class Treap {
     }
 
     public remove(key: string): boolean {
-        const node = this.search(this.root, key);
+        const node = this.search(key);
 
         if (!node) {
             return false;

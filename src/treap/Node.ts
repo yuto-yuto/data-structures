@@ -1,6 +1,6 @@
 export class Node {
     private _left?: Node;
-    public get Left() {
+    public get Left(): Node | undefined {
         return this._left;
     }
     public set Left(node: Node | undefined) {
@@ -11,7 +11,7 @@ export class Node {
     }
 
     private _right?: Node;
-    public get Right() {
+    public get Right(): Node | undefined {
         return this._right;
     }
     public set Right(node: Node | undefined) {
@@ -22,13 +22,10 @@ export class Node {
     }
 
     private _parent?: Node;
-    public get Parent() {
+    public get Parent(): Node | undefined {
         return this._parent;
     }
     public set Parent(node: Node | undefined) {
-        if (node) {
-            node._parent = this._parent;
-        }
         this._parent = node;
     }
 
@@ -39,7 +36,7 @@ export class Node {
 
     public biggerThan(targetKey: string): boolean {
         for (let i = 0; i < this.Key.length; i++) {
-            const original = this.Key[i].toLowerCase();
+            const original = this.Key[i]?.toLowerCase();
             const target = targetKey[i]?.toLowerCase();
 
             if (original === target) {
@@ -53,7 +50,7 @@ export class Node {
 
             return original > target;
         }
-        // same key
-        return true;
+        // same key or targetKey is longer
+        return this.Key.length >= targetKey.length;
     }
 }
