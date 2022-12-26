@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
-    "dway": "ts-node src/dway_heap/app.ts",
+    "dway": "ts-node dway_heap/app.ts",
     "test": "mocha --recursive --require ts-node/register ./**/*_spec.ts"
   },
   "repository": {
