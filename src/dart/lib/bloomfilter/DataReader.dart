@@ -13,17 +13,16 @@ class SlowStorage {
   int get length => _numbers.length;
 
   bool insert(int num) {
-    // sleep(Duration(seconds: 1));
     return _numbers.add(num);
   }
 
   bool remove(int num) {
-    sleep(Duration(seconds: 1));
+    sleep(Duration(milliseconds: 100));
     return _numbers.remove(num);
   }
 
   bool contains(int num) {
-    sleep(Duration(seconds: 1));
+    sleep(Duration(milliseconds: 100));
     return _numbers.contains(num);
   }
 }
@@ -51,5 +50,8 @@ class NumChecker {
       return actual;
     }
     return false;
+  }
+  void printFalsePositiveRatio(){
+    print("False Positive Ratio: ${_bloomFilter.falsePositiveProbability()}");
   }
 }

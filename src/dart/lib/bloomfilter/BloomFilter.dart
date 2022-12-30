@@ -23,6 +23,7 @@ class BloomFilter {
   late final int numberOfBits;
   late final List<HashFunction> hashFunctions;
   late final Int8List bitsArray;
+  late final int numberOfHashFunctions;
   final bitsPerElement = 8;
 
   BloomFilter({
@@ -45,9 +46,8 @@ class BloomFilter {
     }
 
     numberOfBits = -(maxSize * log(maxTolerance) / ln2 / ln2).ceil();
-    final numberOfHashFunctions = -(log(maxTolerance) / ln2).ceil();
-    final numberOfElements =
-        (numberOfBits / bitsPerElement).ceil();
+    numberOfHashFunctions = -(log(maxTolerance) / ln2).ceil();
+    final numberOfElements = (numberOfBits / bitsPerElement).ceil();
     bitsArray = Int8List(numberOfElements);
     hashFunctions = _initiHashFunctions(numberOfHashFunctions);
   }
@@ -89,6 +89,11 @@ class BloomFilter {
     for (var element in positions) {
       writeBit(element);
     }
+  }
+
+  num falsePositiveProbability() {
+    final a = pow(e, -numberOfHashFunctions * size / numberOfBits);
+    return pow((1 - a), numberOfHashFunctions);
   }
 
   List<int> _key2Positions(int seed, String key) {
