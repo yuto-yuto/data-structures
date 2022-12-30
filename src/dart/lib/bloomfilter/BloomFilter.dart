@@ -14,15 +14,16 @@ class BitCoordinates {
   });
 }
 
-// typedef HashFunctions = func(h1,h2) =>int;
+typedef HashFunction = int Function(int h1, int h2);
 
 class BloomFilter {
   int size = 0;
   final int maxSize;
   late final int seed;
   late final int numberOfBits;
-  late final List<dynamic> hashFunctions;
+  late final List<HashFunction> hashFunctions;
   late final Int8List bitsArray;
+  final bitsPerElement = 8;
 
   BloomFilter({
     required this.maxSize,
@@ -30,7 +31,7 @@ class BloomFilter {
     Uint64? seed,
   }) {
     if (seed == null) {
-      this.seed = Random().nextInt(999999999999);
+      this.seed = Random().nextInt(pow(2, 32).toInt());
     }
 
     if (maxSize <= 0) {
@@ -45,15 +46,16 @@ class BloomFilter {
 
     numberOfBits = -(maxSize * log(maxTolerance) / ln2 / ln2).ceil();
     final numberOfHashFunctions = -(log(maxTolerance) / ln2).ceil();
-    final numberOfElements = (numberOfBits / bitsArray.elementSizeInBytes).ceil();
+    final numberOfElements =
+        (numberOfBits / bitsPerElement).ceil();
     bitsArray = Int8List(numberOfElements);
     hashFunctions = _initiHashFunctions(numberOfHashFunctions);
   }
 
   BitCoordinates findBitCoordinates(int index) {
-    final bitsPerInt = 8 * bitsArray.elementSizeInBytes;
-    final elementIndex = (index / bitsPerInt).floor();
-    final bitIndex = index % bitsPerInt;
+    final bitsPerElement = 8 * bitsArray.elementSizeInBytes;
+    final elementIndex = (index / bitsPerElement).floor();
+    final bitIndex = index % bitsPerElement;
     return BitCoordinates(elementIndex: elementIndex, bitIndex: bitIndex);
   }
 
@@ -72,16 +74,34 @@ class BloomFilter {
     return bitsArray;
   }
 
-  key2Positions(String key, int seed) {
-    final hashM = MurmurHash.v3(key, seed);
-    final hashF = fnv1_32_s(key);
-    return hashFunctions.map((h) => h(hashM, hashF));
+  bool contains(String key, {List<int>? positions}) {
+    positions ??= _key2Positions(seed, key);
+    return positions.every((element) => readBit(element) != 0);
   }
 
-  _initiHashFunctions(int numberOfHashFunctions) {
+  void insert(String key) {
+    final positions = _key2Positions(seed, key);
+    if (contains(key, positions: positions)) {
+      return;
+    }
+
+    size++;
+    for (var element in positions) {
+      writeBit(element);
+    }
+  }
+
+  List<int> _key2Positions(int seed, String key) {
+    final hashM = MurmurHash.v3(key, seed);
+    final hashF = fnv1_32_s(key);
+    return hashFunctions.map((h) => h(hashM, hashF)).toList();
+  }
+
+  List<HashFunction> _initiHashFunctions(int numberOfHashFunctions) {
     return List.generate(
-        numberOfHashFunctions,
-        (index) =>
-            (h1, h2) => (h1 + index * h2 + index * index) % numberOfBits);
+      numberOfHashFunctions,
+      (int index) => ((int h1, int h2) =>
+          (h1 + index * h2 + index * index) % numberOfBits),
+    );
   }
 }
