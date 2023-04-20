@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:dart/bloomfilter/DataReader.dart';
+import 'package:dart/bloomfilter/data_reader.dart';
 
 void main(List<String> args) {
   final reader = NumChecker();

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart/bloomfilter/BloomFilter.dart';
+import 'package:dart/bloomfilter/bloom_filter.dart';
 
 const numberRange = 10000;
 
