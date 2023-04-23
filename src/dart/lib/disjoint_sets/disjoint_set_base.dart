@@ -21,8 +21,7 @@ abstract class DisjointSetBase<T> {
   /// Otherwise false.
   bool areDisjoint(Element elem1, Element elem2);
 
-  /// Move all elements in the partition where [elem1] belongs
-  /// into another partition where [elem2] belongs to.
+  /// Merge the two elements into one group.
   bool merge(Element elem1, Element elem2);
 
   /// Show all elements in this Disjoint set.

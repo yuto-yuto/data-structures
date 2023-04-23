@@ -13,9 +13,7 @@ class TreeDisJointSet extends DisjointSetBase<Tree> {
       return false;
     }
 
-    partitionsMap.addAll({
-      elem: Tree(elem),
-    });
+    partitionsMap[elem] = Tree(elem);
     return true;
   }
 
@@ -42,7 +40,7 @@ class TreeDisJointSet extends DisjointSetBase<Tree> {
   @override
   bool merge(Element elem1, Element elem2) {
     final p1 = findPartition(elem1);
-    var p2 = findPartition(elem2);
+    final p2 = findPartition(elem2);
 
     if (p1.root == p2.root) {
       return false;

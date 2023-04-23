@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:dart/disjoint_sets/disjoint_set_base.dart';
 import 'package:dart/disjoint_sets/tree.dart';
 
-class DisjointSet extends DisjointSetBase<Set<Element>> {
-  DisjointSet({HashMap<Element, Set<Element>>? initialSet})
+class NaiveDisjointSet extends DisjointSetBase<Set<Element>> {
+  NaiveDisjointSet({HashMap<Element, Set<Element>>? initialSet})
       : super(initialSet: initialSet);
 
   @override
@@ -13,9 +13,7 @@ class DisjointSet extends DisjointSetBase<Set<Element>> {
       return false;
     }
 
-    partitionsMap.addAll({
-      elem: {elem}
-    });
+    partitionsMap[elem] = {elem};
     return true;
   }
 
