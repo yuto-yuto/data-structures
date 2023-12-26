@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Dart_Trie",
+            "type": "dart",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/dart/lib/trie/main.dart"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "DwayHeapNumber",
