@@ -16,11 +16,12 @@ void main(List<String> args) {
   final treeDisjointSet = TreeDisJointSet();
   run(treeDisjointSet);
   final p = treeDisjointSet.findPartition(1);
-  print(p.root);
-  print(p.root);
 
   print("--- merge two times ---");
+  // 1, 4 are merged in run() func
   print(treeDisjointSet.areDisjoint(1, 4)); // false
+  // 5 is in a different group
+  print(treeDisjointSet.areDisjoint(1, 5)); // true
   print(treeDisjointSet.merge(5, 4)); // true
   print(treeDisjointSet.areDisjoint(1, 5)); // false
   print(treeDisjointSet.merge(2, 4)); // true
@@ -55,12 +56,8 @@ void run(DisjointSetBase disjointSet) {
 }
 
 void run2() {
-  final seed1 = DateTime.now().millisecond;
-  final seed2 = DateTime.now().second;
-  final seed3 = DateTime.now().microsecond;
-  final random1 = Random(seed1);
-  final random2 = Random(seed2);
-  final random3 = Random(seed3);
+  final seed = DateTime.now().millisecond;
+  final random = Random(seed);
 
   final numberOfItems = 20;
   final initialSet = HashMap<int, Tree>.fromIterable(
@@ -77,9 +74,9 @@ void run2() {
 
   List<int> lastValue = [];
   for (var i = 0; i < 300; i++) {
-    final item1 = random1.nextInt(numberOfItems);
-    final item2 = random2.nextInt(numberOfItems);
-    final item3 = random3.nextInt(numberOfItems);
+    final item1 = random.nextInt(numberOfItems);
+    final item2 = random.nextInt(numberOfItems);
+    final item3 = random.nextInt(numberOfItems);
 
     if (canMerge(lastValue, item1, item2)) {
       disjointSet.merge(item1, item2);
