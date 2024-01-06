@@ -4,7 +4,7 @@ const alphabets = ["abcdefghijklmnopqrstuvwxyz"];
 
 class TrieNode {
   bool isKeyNode;
-  final HashMap<int, TrieNode?> children = HashMap();
+  final HashMap<String, TrieNode?> children = HashMap();
 
   // TrieNode._(String key, int charIndex) : isKeyNode = charIndex >= key.length {
   //   if (charIndex < key.length) {

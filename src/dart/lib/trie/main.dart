@@ -9,14 +9,18 @@ void main(List<String> args) {
   trie.insert("android");
 
   print("---search---");
-  print(trie.search("an") != null);
-  print(trie.search("and") != null);
+  print(trie.search("an") != null); // true
+  print(trie.search("and") != null); // true
+  print(trie.search("answer") != null); // true
+  print(trie.search("ankle") != null); // true
+  print(trie.search("android") != null); // true
 
   print("---longest prefix---");
-  print(trie.longestPrefix("answer"));
-  print(trie.longestPrefix("android"));
+  print(trie.longestPrefix("answering")); // answer
+  print(trie.longestPrefix("android")); // android
 
   print("---remove---");
-  print(trie.remove("android"));
-  print(trie.longestPrefix("android"));
+  print(trie.remove("android")); // true
+
+  print(trie.longestPrefix("android")); // and
 }

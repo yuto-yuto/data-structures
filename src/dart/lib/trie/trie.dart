@@ -10,7 +10,7 @@ class Trie {
 
     TrieNode result = root;
     for (int i = 0; i < s.length; i++) {
-      final child = result.children[s[i].codeUnitAt(0)];
+      final child = result.children[s[i]];
       if (child == null) {
         return null;
       }
@@ -30,9 +30,9 @@ class Trie {
     for (int i = 0; i < s.length; i++) {
       final c = s[i];
 
-      final child = currentNode.children[c.codeUnitAt(0)];
+      final child = currentNode.children[c];
       if (child == null) {
-        addNewBranch(s);
+        addNewBranch(currentNode, s.substring(i));
 
         return;
       }
@@ -43,17 +43,17 @@ class Trie {
     currentNode.isKeyNode = true;
   }
 
-  void addNewBranch(String s) {
+  void addNewBranch(TrieNode node, String s) {
     if (s.isEmpty) {
-      root.isKeyNode = true;
+      node.isKeyNode = true;
 
       return;
     }
 
-    TrieNode currentNode = root;
+    TrieNode currentNode = node;
     for (int i = 0; i < s.length; i++) {
       final newNode = TrieNode.empty();
-      currentNode.children[s.codeUnitAt(i)] = newNode;
+      currentNode.children[s[i]] = newNode;
       currentNode = newNode;
     }
 
@@ -85,11 +85,11 @@ class Trie {
       return (deleted, node.children.isEmpty);
     }
 
-    final child = node.children[s.codeUnitAt(0)];
+    final child = node.children[s[0]];
     if (child != null) {
-      final (deleted, shouldPrune) = _prune(child, s.substring(0));
+      final (deleted, shouldPrune) = _prune(child, s.substring(1));
       if (deleted && shouldPrune) {
-        node.children[s.codeUnitAt(0)] = null;
+        node.children[s[0]] = null;
         if (node.isKeyNode || node.children.isNotEmpty) {
           return (deleted, false);
         }
@@ -113,7 +113,7 @@ class Trie {
       return null; // key not found
     }
 
-    final c = s.codeUnitAt(0);
+    final c = s[0];
     final child = node.children[c];
     if (child == null) {
       if (node.isKeyNode) {
@@ -123,7 +123,7 @@ class Trie {
       return null; // key not found
     }
 
-    final result = _longestPrefix(child, s.substring(0), prefix + c);
+    final result = _longestPrefix(child, s.substring(1), prefix + c);
     if (result != null) {
       return result;
     } else if (node.isKeyNode) {
