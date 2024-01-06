@@ -59,4 +59,77 @@ class Trie {
 
     currentNode.isKeyNode = true;
   }
+
+  /// remove doesn't remove the leaf node that was removed this function.
+  bool remove(String s) {
+    final foundNode = search(s);
+    if (foundNode == null || !foundNode.isKeyNode) {
+      return false;
+    }
+
+    foundNode.isKeyNode = false;
+    return true;
+  }
+
+  bool prune(String s) {
+    final (deleted, _) = _prune(root, s);
+
+    return deleted;
+  }
+
+  (bool, bool) _prune(TrieNode node, String s) {
+    if (s.isEmpty) {
+      final deleted = node.isKeyNode;
+      node.isKeyNode = false;
+
+      return (deleted, node.children.isEmpty);
+    }
+
+    final child = node.children[s.codeUnitAt(0)];
+    if (child != null) {
+      final (deleted, shouldPrune) = _prune(child, s.substring(0));
+      if (deleted && shouldPrune) {
+        node.children[s.codeUnitAt(0)] = null;
+        if (node.isKeyNode || node.children.isNotEmpty) {
+          return (deleted, false);
+        }
+        return (false, false); // key not found
+      }
+    }
+
+    return (false, false);
+  }
+
+  String? longestPrefix(String s) {
+    return _longestPrefix(root, s, "");
+  }
+
+  String? _longestPrefix(TrieNode node, String s, prefix) {
+    if (s.isEmpty) {
+      if (node.isKeyNode) {
+        return prefix;
+      }
+
+      return null; // key not found
+    }
+
+    final c = s.codeUnitAt(0);
+    final child = node.children[c];
+    if (child == null) {
+      if (node.isKeyNode) {
+        return prefix;
+      }
+
+      return null; // key not found
+    }
+
+    final result = _longestPrefix(child, s.substring(0), prefix + c);
+    if (result != null) {
+      return result;
+    } else if (node.isKeyNode) {
+      return prefix;
+    }
+
+    return null; // key not found
+  }
 }
