@@ -1,7 +1,7 @@
 import 'package:dart/trie/trie_node.dart';
 
 class Trie {
-  TrieNode root = TrieNode.empty();
+  TrieNode root = TrieNode();
 
   TrieNode? search(String s) {
     if (s.isEmpty) {
@@ -44,15 +44,9 @@ class Trie {
   }
 
   void addNewBranch(TrieNode node, String s) {
-    if (s.isEmpty) {
-      node.isKeyNode = true;
-
-      return;
-    }
-
     TrieNode currentNode = node;
     for (int i = 0; i < s.length; i++) {
-      final newNode = TrieNode.empty();
+      final newNode = TrieNode();
       currentNode.children[s[i]] = newNode;
       currentNode = newNode;
     }
@@ -87,17 +81,17 @@ class Trie {
 
     final child = node.children[s[0]];
     if (child != null) {
-      final (deleted, shouldPrune) = _prune(child, s.substring(1));
+      var (deleted, shouldPrune) = _prune(child, s.substring(1));
       if (deleted && shouldPrune) {
-        node.children[s[0]] = null;
+        node.children.remove(s[0]);
         if (node.isKeyNode || node.children.isNotEmpty) {
-          return (deleted, false);
+          shouldPrune = false;
         }
-        return (false, false); // key not found
       }
+      return (deleted, shouldPrune);
     }
 
-    return (false, false);
+    return (false, false); // key not found
   }
 
   String? longestPrefix(String s) {
@@ -131,5 +125,27 @@ class Trie {
     }
 
     return null; // key not found
+  }
+
+  List<String> startWith(String prefix) {
+    final node = search(prefix);
+    if (node == null) {
+      return [];
+    }
+
+    return _startWith(node, prefix);
+  }
+
+  List<String> _startWith(TrieNode node, String prefix) {
+    final List<String> result = [];
+    if (node.isKeyNode) {
+      result.add(prefix);
+    }
+
+    for (final child in node.children.entries) {
+      result.addAll(_startWith(child.value, prefix + child.key));
+    }
+
+    return result;
   }
 }
