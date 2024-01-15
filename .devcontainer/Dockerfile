@@ -10,3 +10,8 @@ RUN npm install -g typescript && \
     sudo apt update && sudo apt install dart && \
     export PATH="$PATH:/usr/lib/dart/bin" && \
     echo 'export PATH="$PATH:/usr/lib/dart/bin"' >> ~/.profile
+
+RUN sudo wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz -O /tmp/golang.tar.gz && \
+    sudo tar -C /usr/local -xzf /tmp/golang.tar.gz && \
+    export PATH="$PATH:/usr/local/go/bin" && \
+    echo 'export PATH="$PATH:/usr/local/go/bin"' >> ~/.profile
