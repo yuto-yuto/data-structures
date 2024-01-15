@@ -17,9 +17,9 @@ function run1() {
     numberHeap.push(6); numberHeap.showTree(); // 9, 6, 4, 2
     numberHeap.push(8); numberHeap.showTree(); // 9  8, 4, 2, 6
 
-    let results = [];
+    let results: number[] = [];
     for (let i = numberHeap.size; i > 0; i--) {
-        results.push(numberHeap.pop());
+        results.push(numberHeap.pop()!);
     }
     console.log(`Result: ${results}`);
 }
@@ -113,7 +113,7 @@ function run3() {
 
         console.time("remove1")
         for (let i = 0; i < 200; i++) {
-            const index = Math.floor(Math.random() * 200 );
+            const index = Math.floor(Math.random() * 200);
             heap.remove(heap.peek(index)!);
         }
         console.timeEnd("remove1")
