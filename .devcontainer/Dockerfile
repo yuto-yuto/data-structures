@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node:0-20
 
-USER node
 RUN npm install -g typescript && \
     sudo apt update && sudo apt install && \
     sudo apt install apt-transport-https && \
@@ -11,7 +10,12 @@ RUN npm install -g typescript && \
     export PATH="$PATH:/usr/lib/dart/bin" && \
     echo 'export PATH="$PATH:/usr/lib/dart/bin"' >> ~/.profile
 
-RUN sudo wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz -O /tmp/golang.tar.gz && \
-    sudo tar -C /usr/local -xzf /tmp/golang.tar.gz && \
-    export PATH="$PATH:/usr/local/go/bin" && \
-    echo 'export PATH="$PATH:/usr/local/go/bin"' >> ~/.profile
+RUN wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz -O /tmp/golang.tar.gz && \
+    tar -C /usr/local -xzf /tmp/golang.tar.gz
+
+ENV GOPATH /usr/local/go
+ENV PATH $PATH:$GOPATH/bin
+RUN export PATH="$PATH:$GOPATH/bin"
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+RUN go install golang.org/x/tools/gopls@latest && \
+    go install golang.org/x/tools/cmd/goimports@latest
