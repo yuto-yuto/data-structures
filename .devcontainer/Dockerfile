@@ -13,9 +13,9 @@ RUN npm install -g typescript && \
 RUN wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz -O /tmp/golang.tar.gz && \
     tar -C /usr/local -xzf /tmp/golang.tar.gz
 
-ENV GOPATH /usr/local/go
-ENV PATH $PATH:$GOPATH/bin
-RUN export PATH="$PATH:$GOPATH/bin"
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
-RUN go install golang.org/x/tools/gopls@latest && \
-    go install golang.org/x/tools/cmd/goimports@latest
+# ENV GOPATH /usr/local/go
+# ENV PATH $PATH:$GOPATH/bin
+# RUN export PATH="$PATH:$GOPATH/bin"
+# RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+# RUN go install golang.org/x/tools/gopls@latest && \
+#     go install golang.org/x/tools/cmd/goimports@latest
