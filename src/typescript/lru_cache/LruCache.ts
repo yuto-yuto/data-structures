@@ -4,19 +4,20 @@ export class LRUCache<T> {
     private head: DoubleLinkedNode<T> | undefined;
     private tail: DoubleLinkedNode<T> | undefined;
     private mapping = new Map<string, DoubleLinkedNode<T>>();
-    private currentSize = 0;
 
     constructor(
         private readonly maxSize: number,
     ) { }
 
     public get(key: string): T | undefined {
-        const found = this.mapping.get(key);
-        if (!found) {
+        const node = this.mapping.get(key);
+        if (!node) {
             return undefined
         }
 
-        return found.value
+        this.moveToFront(node)
+
+        return node.value
     }
 
     public set(key: string, value: T): void {
@@ -28,7 +29,7 @@ export class LRUCache<T> {
             return;
         }
 
-        if (this.maxSize <= this.currentSize) {
+        if (this.maxSize <= this.mapping.size) {
             this.removeOldCache();
         }
 
@@ -81,9 +82,14 @@ export class LRUCache<T> {
     }
 
     private moveToFront(node: DoubleLinkedNode<T>) {
-        if (node.previous) {
-            node.previous.next = node.next;
+        const previous = node.previous;
+        if (previous) {
+            previous.next = node.next;
             node.previous = undefined;
+        }
+
+        if (node.next) {
+            node.next.previous = previous
         }
 
         this.addFront(node);
@@ -99,7 +105,7 @@ export class LRUCache<T> {
             throw new Error("tail doesn't exist.");
         }
 
-        this.tail = removedNode?.previous;
+        this.tail = removedNode.previous;
         if (this.tail) {
             this.tail.next = undefined;
         }
